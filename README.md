@@ -1,7 +1,7 @@
 # SGDK Helper
 
-This is a helper script for developing with Stephane Dallongeville's excellent
-[SGDK](https://github.com/Stephane-D/SGDK).
+This is a helper script for developing on Linux with Stephane Dallongeville's
+excellent [SGDK](https://github.com/Stephane-D/SGDK).
 
 ## Usage
 
