@@ -3,6 +3,9 @@
 This is a helper script for developing on Linux with Stephane Dallongeville's
 excellent [SGDK](https://github.com/Stephane-D/SGDK).
 
+To generate a suitable cross compiler, SGDK Helper uses Andrew DeRosier's
+(m68k-gcc-toolchain)[https://github.com/andwn/m68k-gcc-toolchain] Makefile.
+
 ## Usage
 
 SGDK Helper supports both containerized and native workflows. The advantage
