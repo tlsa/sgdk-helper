@@ -66,6 +66,45 @@ function container_exists()
 	fi
 }
 
+# Install the (Debian) packages needed for toolchain building.
+# This is mostly intended to be called as part of the container build process.
+function install_pkg_toolchain()
+{
+	apt-get update
+
+	apt-get install -y \
+		bison \
+		bzip2 \
+		flex \
+		g++ \
+		gcc \
+		git \
+		libzstd-dev \
+		make \
+		texinfo \
+		wget \
+		xz-utils
+
+	apt-get clean
+}
+
+# Install the (Debian) packages needed for SGDK development.
+# This is mostly intended to be called as part of the container build process.
+function install_pkg_sgdk()
+{
+	apt-get update
+
+	apt-get install -y \
+		ca-certificates-java
+
+	apt-get install -y \
+		default-jre-headless \
+		libpng-dev \
+		unzip
+
+	apt-get clean
+}
+
 # Build a container containing the m68k-elf toolchain.
 # This builds GCC, and takes a long time.
 function build_container_toolchain()
@@ -74,35 +113,17 @@ function build_container_toolchain()
 
 	{
 		echo "FROM amd64/debian:12-slim"
-		echo "RUN apt-get update" \
-		     " && apt-get install -y" \
-		     "     bison" \
-		     "     bzip2" \
-		     "     flex" \
-		     "     g++" \
-		     "     gcc" \
-		     "     git" \
-		     "     libzstd-dev" \
-		     "     make" \
-		     "     texinfo" \
-		     "     wget" \
-		     "     xz-utils" \
-		     " && apt-get clean"
 		echo "RUN useradd -ms /bin/sh -d /helper helper"
 		echo "RUN mkdir /deps" \
 		     " && chown helper:helper /deps/"
-		echo "RUN mkdir /project" \
-		     " && chown helper:helper /project/"
+		echo "COPY --chown=helper:helper ${0} /helper/sgdk-helper.sh"
+		echo "RUN /helper/sgdk-helper.sh $(is_x) install_pkg_toolchain"
 		echo "USER helper"
-		echo "ADD ${0} /helper/sgdk-helper.sh"
+		echo "COPY ${0} /helper/sgdk-helper.sh"
 		echo "RUN DEP_DIR=/deps" \
-		     "    /helper/sgdk-helper.sh" \
-		     "    $(is_x)" \
-		     "    toolchain"
+		     "    /helper/sgdk-helper.sh $(is_x) toolchain"
 		echo "RUN DEP_DIR=/deps" \
-		     "    /helper/sgdk-helper.sh" \
-		     "    $(is_x)" \
-		     "    delete_toolchain_src"
+		     "    /helper/sgdk-helper.sh $(is_x) delete_toolchain_src"
 	} > "${CONTAINER_STEPS}"
 
 	$(container_tool) build . \
@@ -123,20 +144,13 @@ function build_container_sgdk()
 	{
 		echo "FROM ${CONTAINER_TOOLCHAIN_TAG}"
 		echo "USER root"
-		echo "RUN apt-get update" \
-		     " && apt-get install -y" \
-		     "     ca-certificates-java" \
-		     " && apt-get install -y" \
-		     "     default-jre-headless" \
-		     "     libpng-dev" \
-		     "     unzip" \
-		     " && apt-get clean"
+		echo "RUN mkdir /project" \
+		     " && chown helper:helper /project/"
+		echo "COPY --chown=helper:helper ${0} /helper/sgdk-helper.sh"
+		echo "RUN /helper/sgdk-helper.sh $(is_x) install_pkg_sgdk"
 		echo "USER helper"
-		echo "ADD ${0} /helper/sgdk-helper.sh"
 		echo "RUN DEP_DIR=/deps" \
-		     "    /helper/sgdk-helper.sh" \
-		     "    $(is_x)" \
-		     "    deps"
+		     "    /helper/sgdk-helper.sh $(is_x) deps"
 	} > "${CONTAINER_STEPS}"
 
 	$(container_tool) build . \
