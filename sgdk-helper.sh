@@ -59,7 +59,7 @@ function container_tool()
 # Check if the given container tag exists.
 function container_exists()
 {
-	if podman image inspect "$1" &> /dev/null; then
+	if "$(container_tool)" image inspect "$1" &> /dev/null; then
 		echo true
 	else
 		echo false
