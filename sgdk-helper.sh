@@ -41,12 +41,13 @@ declare -r TOOLCHAIN_DIR="${DEP_SRC_DIR}/${TOOLCHAIN_NAME}"
 declare -r CONTAINER_TAG=sgdk-helper
 declare -r CONTAINER_TOOLCHAIN_TAG="${CONTAINER_TAG}-toolchain"
 
+# List of container tools supported by SGDK Helper.
+declare -r CONTAINER_TOOLS="podman docker"
+
 # Get the name of any container tool available.
 function container_tool()
 {
-	declare -r container_tools="podman docker"
-
-	for tool in $container_tools; do
+	for tool in $CONTAINER_TOOLS; do
 		if command -v "$tool" -v &> /dev/null; then
 			echo "$tool"
 			return
