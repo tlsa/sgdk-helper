@@ -517,13 +517,6 @@ function run()
 	blastem out/rom.bin
 }
 
-# Build and run the ROM.
-function romrun()
-{
-	rom
-	run
-}
-
 # Check if `set -x` mode is set.
 # (We detect if it is and propagate it into commands run in the container.)
 function is_x()
@@ -556,7 +549,6 @@ function print_usage()
 	echo "  clean"
 	echo "  rom"
 	echo "  run"
-	echo "  romrun"
 	echo ""
 	echo "Passing 'x' before the command enables 'set -x' for debug."
 	echo ""
