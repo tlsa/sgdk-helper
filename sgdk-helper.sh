@@ -496,6 +496,12 @@ function rom()
 	fi
 }
 
+# Clean the ROM build.
+function clean()
+{
+	rom clean
+}
+
 # Get a shell prompt in the ROM build container environment.
 # Can be useful for investigating.
 function shell()
@@ -547,6 +553,7 @@ function print_usage()
 	echo "  deps"
 	echo ""
 	echo "Commands for development:"
+	echo "  clean"
 	echo "  rom"
 	echo "  run"
 	echo "  romrun"
