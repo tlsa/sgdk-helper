@@ -44,6 +44,37 @@ declare -r CONTAINER_TOOLCHAIN_TAG="${CONTAINER_TAG}-toolchain"
 # List of container tools supported by SGDK Helper.
 declare -r CONTAINER_TOOLS="podman docker"
 
+# Generate a Makefile wrapper for SGDK Helper.
+function makefile()
+{
+	declare -r SGDK_HELPER_REF="main"
+	declare -r URL="https://raw.github.com/tlsa/sgdk-helper/\$(SGDK_HELPER_REF)/sgdk-helper.sh"
+
+	declare -r TARGETS="clean rom run container deps toolchain"
+
+	{
+		echo -e "SGDK_HELPER_REF = ${SGDK_HELPER_REF}"
+		echo -e "SGDK_HELPER = ${0}"
+		echo -e "TARGETS = ${TARGETS}"
+		echo -e ""
+		echo -e "V ?="
+		echo -e "X := \$(if \$(V),x,)"
+		echo -e ""
+		echo -e "all: rom"
+		echo -e "\$(TARGETS): \$(SGDK_HELPER)"
+		echo -e "\t\$(SGDK_HELPER) \$(X) \$@"
+		echo -e ""
+		echo -e "\$(SGDK_HELPER):"
+		echo -e "\tmkdir -p \$(dir \$@)"
+		echo -e "\twget --user-agent \"Mozilla/4.0\" \\"
+		echo -e "\t\t--output-document=\"\$@\" \\"
+		echo -e "\t\t\"${URL}\""
+		echo -e "\tchmod +x \$@"
+		echo -e ""
+		echo -e ".PHONY: all \$(TARGETS)"
+	} > Makefile
+}
+
 # Get the name of any container tool available.
 function container_tool()
 {
