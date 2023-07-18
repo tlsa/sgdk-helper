@@ -482,10 +482,11 @@ function rom()
 			container
 		fi
 
+		read -ra arg_array < <(is_x)
 		container_run \
 			"${CONTAINER_TAG}" \
 			/helper/sgdk-helper.sh \
-			"$(is_x)" \
+			"${arg_array[@]}" \
 			rom "$@"
 	else
 		PATH="${SGDK_BIN_DIR}:${DEP_OUT_DIR}/bin:${PATH}" \
