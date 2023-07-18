@@ -57,9 +57,24 @@ function container_tool()
 	echo ""
 }
 
+# Provide useful error message about container tool being required.
+function require_container_tool()
+{
+	if ! [ "$(container_tool)" ] ; then
+		echo "ERROR: Container management tool required."
+		echo "Supported tools are:"
+		for tool in $CONTAINER_TOOLS; do
+			echo "- ${tool}"
+		done
+		echo "Either install one or continue with native setup."
+	fi
+}
+
 # Check if the given container tag exists.
 function container_exists()
 {
+	require_container_tool
+
 	if "$(container_tool)" image inspect "$1" &> /dev/null; then
 		echo true
 	else
@@ -112,6 +127,8 @@ function build_container_toolchain()
 {
 	declare -r CONTAINER_STEPS=".container-toolchain"
 
+	require_container_tool
+
 	{
 		echo "FROM amd64/debian:12-slim"
 		echo "RUN useradd -ms /bin/sh -d /helper helper"
@@ -141,6 +158,8 @@ function build_container_toolchain()
 function build_container_sgdk()
 {
 	declare -r CONTAINER_STEPS=".container-sgdk"
+
+	require_container_tool
 
 	{
 		echo "FROM ${CONTAINER_TOOLCHAIN_TAG}"
@@ -426,6 +445,8 @@ function toolchain()
 # This would normally be run via the `rom` or `shell` functions.
 function container_run()
 {
+	require_container_tool
+
 	$(container_tool) run -t -i \
 		--uidmap 1000:0:1 \
 		--uidmap 0:1:1000 \
