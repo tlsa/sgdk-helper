@@ -164,7 +164,7 @@ function build_container_sgdk()
 # `build_container_toolchain` if the toolchain container doesn't
 # exist yet. To force `build_container_toolchain` to run again, run
 # it explicitly.
-function build_container()
+function container()
 {
 	if ! "$(container_exists ${CONTAINER_TOOLCHAIN_TAG})"; then
 		build_container_toolchain
@@ -457,7 +457,7 @@ function rom()
 {
 	if [ "$(container_tool)" ] ; then
 		if [ "$(container_exists ${CONTAINER_TAG})" = false ] ; then
-			build_container
+			container
 		fi
 
 		container_run \
@@ -517,7 +517,7 @@ function print_usage()
 	echo "  ${0} [x] command [args]"
 	echo ""
 	echo "Commands for container setup:"
-	echo "  build_container"
+	echo "  container"
 	echo ""
 	echo "Commands for native setup:"
 	echo "  toolchain"

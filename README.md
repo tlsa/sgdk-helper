@@ -35,7 +35,7 @@ We build our own container with the dependencies we need for SGDK development
 based on a slimmed down Debian container.
 
 ```bash
-./sgdk-helper.sh build_container
+./sgdk-helper.sh container
 ```
 
 ### Native setup
