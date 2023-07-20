@@ -106,7 +106,7 @@ function install_pkg_toolchain()
 
 # Install the (Debian) packages needed for SGDK development.
 # This is mostly intended to be called as part of the container build process.
-function install_pkg_sgdk()
+function install_pkg_deps()
 {
 	apt-get update
 
@@ -167,7 +167,7 @@ function build_container_sgdk()
 		echo "RUN mkdir /project" \
 		     " && chown helper:helper /project/"
 		echo "COPY --chown=helper:helper ${0} /helper/sgdk-helper.sh"
-		echo "RUN /helper/sgdk-helper.sh $(is_x) install_pkg_sgdk"
+		echo "RUN /helper/sgdk-helper.sh $(is_x) install_pkg_deps"
 		echo "USER helper"
 		echo "RUN DEP_DIR=/deps" \
 		     "    /helper/sgdk-helper.sh $(is_x) deps"
