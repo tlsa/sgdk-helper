@@ -456,6 +456,39 @@ function container_run()
 		"$@"
 }
 
+# Print instructions on how to set up container and native workflows.
+function print_setup_guide()
+{
+	echo "ERROR: To build a ROM you must set up either the container or"
+	echo "native build workflow."
+	echo ""
+	echo "To set up the container workflow, use the following command:"
+	echo ""
+	echo "    container"
+	echo ""
+	echo "Requirements: You just need to install a container tool."
+	echo ""
+	echo "Supported container tools are:"
+	for tool in $CONTAINER_TOOLS; do
+		echo "- ${tool}"
+	done
+	echo ""
+	echo "To use the native workflow, use both of the following commands:"
+	echo ""
+	echo "    toolchain"
+	echo "    deps"
+	echo ""
+	echo "Requirements: You need to install a bunch of packages on your"
+	echo "system. The following commands will list the packages you need:"
+	echo ""
+	echo "    ${0} type install_pkg_toolchain"
+	echo "    ${0} type install_pkg_deps"
+	echo ""
+	echo "Regardless if which workflow you choose to set up, one of the"
+	echo "steps involves building a GCC cross complier from source."
+	echo "This will take a while."
+}
+
 # Build a Mega Drive ROM!
 #
 # This assumes you're currently in the top level of your project source
@@ -465,34 +498,27 @@ function container_run()
 # be passed to `make` for the ROM build. For example, to clean your build,
 # pass `clean`: `./sgdk-helper.sh rom clean`.
 #
-# If you've got a known container tool this will build the ROM inside the
-# container. If you have a known container tool, but haven't yet built the
-# `sgdk-helper` container, this will also build that. Note, if you also
-# haven't built the `sgdk-helper-toolchain` container, that will be built too,
-# and it will take a long time.
-#
-# If you don't have a known container tool, this will try to build the ROM
-# directly on your machine. You'll need to install some packages to do this
-# (see the `apt-get install` steps in the container build functions for some
-# clues). You'll also need to build the toolchain and deps.
+# This will either build the ROM in the container or natively on your machine,
+# depending on which you have set up. If neither workflow has been set up, this
+# will print instructions.
 function rom()
 {
-	if [ "$(container_tool)" ] ; then
-		if [ "$(container_exists ${CONTAINER_TAG})" = false ] ; then
-			container
-		fi
-
+	if [ "$(container_tool)" ] &&
+	     "$(container_exists ${CONTAINER_TAG})" ; then
 		read -ra arg_array < <(is_x)
 		container_run \
 			"${CONTAINER_TAG}" \
 			/helper/sgdk-helper.sh \
 			"${arg_array[@]}" \
 			rom "$@"
-	else
+	elif [ -f "${DEP_OUT_DIR}/bin" ] &&
+	     [ -f "${SGDK_BIN_DIR}" ] ; then
 		PATH="${SGDK_BIN_DIR}:${DEP_OUT_DIR}/bin:${PATH}" \
 			make -f "${SGDK_DIR}/makefile.gen" \
 			     LTO_PLUGIN="--plugin=$(lto_plugin_path)" \
 			     PREFIX=m68k-elf- "$@"
+	else
+		print_setup_guide
 	fi
 }
 
