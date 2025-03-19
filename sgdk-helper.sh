@@ -511,8 +511,8 @@ function rom()
 			/helper/sgdk-helper.sh \
 			"${arg_array[@]}" \
 			rom "$@"
-	elif [ -f "${DEP_OUT_DIR}/bin" ] &&
-	     [ -f "${SGDK_BIN_DIR}" ] ; then
+	elif [ -d "${DEP_OUT_DIR}/bin" ] &&
+	     [ -d "${SGDK_BIN_DIR}" ] ; then
 		PATH="${SGDK_BIN_DIR}:${DEP_OUT_DIR}/bin:${PATH}" \
 			make -f "${SGDK_DIR}/makefile.gen" \
 			     LTO_PLUGIN="--plugin=$(lto_plugin_path)" \
