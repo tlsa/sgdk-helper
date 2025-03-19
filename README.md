@@ -60,10 +60,11 @@ sgdk-helper.sh rom
 > [example](https://github.com/Stephane-D/SGDK/tree/master/sample/sonic) from
 > SGDK. There are many others both in the SGDK project and around GitHub.
 
-And you can run the ROM in [BlastEm](https://www.retrodev.com/blastem/) with:
+And you can run the built ROM in [BlastEm](https://www.retrodev.com/blastem/),
+if it's installed natively, with:
 
 ```bash
-sgdk-helper.sh rom
+sgdk-helper.sh run
 ```
 
 > **Note:** Further documentation coming soon.
